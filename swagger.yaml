@@ -20,6 +20,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Registration'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   '/registrations':
     post:
@@ -39,6 +41,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegistrationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
 
   '/registrations/{registrationId}/signup':
     post:
@@ -60,6 +64,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApplicationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
 components:
   parameters:
@@ -87,6 +95,12 @@ components:
         createdAt:
           type: string
           format: date
+      required:
+        - id
+        - type
+        - personalDetails
+        - leaseApplicationDetails
+        - createdAt
 
     RegistrationResponse:
       type: object
@@ -103,6 +117,12 @@ components:
         createdAt:
           type: string
           format: date
+      required:
+        - id
+        - type
+        - personalDetails
+        - leaseApplicationDetails
+        - createdAt
 
     RegistrationType:
       type: string
@@ -125,6 +145,11 @@ components:
         updatedAt:
           type: string
           format: date
+      required:
+        - id
+        - status
+        - createdAt
+        - updatedAt
 
     ApplicationResponse:
       type: object
@@ -140,6 +165,11 @@ components:
         updatedAt:
           type: string
           format: date
+      required:
+        - id
+        - status
+        - createdAt
+        - updatedAt
 
     ApplicationStatus:
       type: string
@@ -162,6 +192,12 @@ components:
           type: string
         email:
           type: string
+      required:
+        - id
+        - firstName
+        - lastName
+        - phone
+        - email
 
     LeaseApplicationDetails:
       type: object
@@ -181,3 +217,40 @@ components:
           format: date
         otherParty:
           $ref: '#/components/schemas/PersonalDetails'
+      required:
+        - id
+        - applicationId
+        - address
+        - startDate
+        - endDate
+        - otherParty
+
+    Error:
+      type: object
+      properties:
+        errorCode:
+          type: number
+        error:
+          type: string
+        errorDetail:
+          type: string
+      required:
+        - errorCode
+        - error
+        - errorDetail
+
+  responses:
+
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
