@@ -1,5 +1,5 @@
 from django.db import models
-import uuid 
+
 
 # Create your models here.
 
@@ -13,7 +13,7 @@ User Model, there are three types of users:
 class User(models.Model):
     
     TENANT = 'TENANT'
-    LANDLORD = 'LLANDLORD'
+    LANDLORD = 'LANDLORD'
     AGENT = 'AGENT'
     ADMIN = 'ADMIN'
     TEST = 'TEST'
@@ -36,20 +36,14 @@ class User(models.Model):
     
     user_status  = models.CharField(max_length=64,choices=USER_STATUS_CHOICES,default='NEW')
     
-    first_name  = models.CharField(max_length=256)
-    last_name  = models.CharField(max_length=256)
+    first_name  = models.CharField(max_length=256, blank=True)
+    last_name  = models.CharField(max_length=256, blank=True)
     
-    ##excuse my shit way of doing this, randomly generating user_id
-    random_uid = str(uuid.uuid4())
-    generated_user_id = str(first_name)[0] + str(last_name)[0] + random_uid[0] + random_uid[1] + random_uid[2] + random_uid[3]
-    generated_password =  random_uid[4] + random_uid[5] + random_uid[6] + random_uid[7] + str(first_name)[0] + str(last_name)[0] 
+    contact_number  = models.CharField(max_length=64, blank=True)
+    email  = models.CharField(max_length=128, blank=True)
     
-    contact_number  = models.CharField(max_length=64)
-    email  = models.CharField(max_length=128)
-
-
-    user_id = models.CharField(max_length=256, default=generated_user_id)
-    password = models.CharField(max_length=256, default=generated_password)
+    user_id = models.CharField(max_length=256, default="FFFF")
+    password = models.CharField(max_length=256, default="FFFF")
     secret_key = models.CharField(max_length=64, blank=True)
     password_reset_token  = models.CharField(max_length=512, blank=True)
     user_bsb  = models.CharField(max_length=64, blank=True)
@@ -66,8 +60,8 @@ class User(models.Model):
 Application Model, model used for security deposits 
 """
 
-class Application(models.Model):    
-    
+class Application(models.Model): 
+
     APPLICATION_STATUS_CHOICES = (
         ('NEW', 'NEW'),
         ('VERIFIED', 'VERIFIED'),
@@ -79,14 +73,12 @@ class Application(models.Model):
     
     application_status  = models.CharField(max_length=64,choices=APPLICATION_STATUS_CHOICES,default='NEW')
     
-    ##excuse my shit way of doing this, randomly generating random id
-    random_uid = str(uuid.uuid4())
-    generated_internal_id = random_uid[0] + random_uid[1] + random_uid[2] + random_uid[3]
-    internal_id = models.CharField(max_length=64, default=generated_internal_id)
-    
-    application_id = models.CharField(max_length=128)
+    ejari_no = models.CharField(max_length=128)
+    premise_no = models.CharField(max_length=128)
+    internal_id = models.CharField(max_length=128)
     tenant_id  = models.CharField(max_length=512)
-    onwer_id  = models.CharField(max_length=512)
+    owner_id  = models.CharField(max_length=512)
+    
     application_address  = models.CharField(max_length=256)
     
     application_start_date  = models.DateTimeField(blank=True)
@@ -101,7 +93,7 @@ class Application(models.Model):
     application_owner_dispute_claim = models.CharField(max_length=2048, blank=True)
     
     def __str__(self):
-        return '%s %s %s %s %s %s %s' % (self.application_id, self.internal_id, self.tenant_id, self.onwer_id, self.application_deposit_amount, self.application_deposit_payment_terms, self.application_created_date)
+        return '%s %s %s %s %s %s %s' % (self.application_id, self.internal_id, self.application_registered_by, self.application_other_party, self.application_deposit_amount, self.application_deposit_payment_terms, self.application_created_date)
     
     
 """
@@ -125,6 +117,37 @@ class Event(models.Model):
     
     def __str__(self):
         return '%s %s %s %s %s %s %s' % (self.event_id, self.event_type, self.user_id, self.event_status, self.event_occured_at)
+    
+    
+ 
+    
+"""
+Registration Model, model used for handling registration
+"""    
+    
+
+class Registration(models.Model):
+    
+    USER_TYPE_CHOICES = (
+        ('TENANT', 'TENANT'),
+        ('LANDLORD', 'LANDLORD'),
+        ('AGENT', 'AGENT'),
+        ('ADMIN', 'ADMIN'),
+        ('TEST','TEST')
+    )
+    
+    registrant_type = models.CharField(max_length=64,choices=USER_TYPE_CHOICES,default='TEST')  
+    registrant_first_name = models.DateTimeField(blank=True)
+    registrant_last_name = models.DateTimeField(blank=True)
+    registrant_phone = models.DateTimeField(blank=True)
+    registrant_email = models.DateTimeField(blank=True)
+    
+    
+    
+
+
+    
+
     
     
     
