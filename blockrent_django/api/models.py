@@ -13,20 +13,18 @@ User Model, there are three types of users:
 class User(models.Model):
     
     TENANT = 'TENANT'
-    LANDLORD = 'LANDLORD'
-    AGENT = 'AGENT'
+    OWNER = 'OWNER'
     ADMIN = 'ADMIN'
     TEST = 'TEST'
     
     USER_TYPE_CHOICES = (
         (TENANT, 'TENANT'),
-        (LANDLORD, 'LANDLORD'),
-        (AGENT, 'AGENT'),
+        (OWNER, 'OWNER'),
         (ADMIN, 'ADMIN'),
         (TEST,'TEST')
     )
     
-    user_type = models.CharField(max_length=64,choices=USER_TYPE_CHOICES,default=TEST)
+    accounType = models.CharField(max_length=64,choices=USER_TYPE_CHOICES,default=TEST)
     
     USER_STATUS_CHOICES = (
         ('NEW', 'NEW'),
@@ -34,23 +32,22 @@ class User(models.Model):
         ('SUSPENDED', 'SUSPENDED'),
     )
     
-    user_status  = models.CharField(max_length=64,choices=USER_STATUS_CHOICES,default='NEW')
+    accountStatus  = models.CharField(max_length=64,choices=USER_STATUS_CHOICES,default='NEW')
     
-    first_name  = models.CharField(max_length=256, blank=True)
-    last_name  = models.CharField(max_length=256, blank=True)
+    firstName  = models.CharField(max_length=256, blank=True)
+    lastName  = models.CharField(max_length=256, blank=True)
     
-    contact_number  = models.CharField(max_length=64, blank=True)
-    email  = models.CharField(max_length=128, blank=True)
+    contactNumber  = models.CharField(max_length=64, blank=True)
+    contactEmail  = models.CharField(max_length=128, blank=True)
     
-    user_id = models.CharField(max_length=256, default="FFFF")
+    accountID = models.CharField(max_length=256, default="FFFF")
     password = models.CharField(max_length=256, default="FFFF")
     secret_key = models.CharField(max_length=64, blank=True)
     password_reset_token  = models.CharField(max_length=512, blank=True)
-    user_bsb  = models.CharField(max_length=64, blank=True)
-    user_account_number  = models.CharField(max_length=128, blank=True)
-    user_bank_name  = models.CharField(max_length=256, blank=True)
-    created_at  = models.DateTimeField(auto_now_add=True)
-    #verified_at  = models.DateTimeField(blank=True)
+    bankBSB  = models.CharField(max_length=64, blank=True)
+    bankNo  = models.CharField(max_length=128, blank=True)
+    bankName  = models.CharField(max_length=256, blank=True)
+    createdAt  = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return '%s %s %s %s %s %s %s' % (self.user_id, self.user_type, self.user_status, self.first_name, self.last_name, self.contact_number, self.email) 
@@ -64,36 +61,37 @@ class Application(models.Model):
 
     APPLICATION_STATUS_CHOICES = (
         ('NEW', 'NEW'),
-        ('VERIFIED', 'VERIFIED'),
+        ('CONFIRMED', 'CONFIRMED'),
         ('ACTIVE', 'ACTIVE'),
         ('SUSPENDED', 'SUSPENDED'),
         ('DISPUTE', 'DISPUTE'),
         ('COMPLETE', 'COMPLETE'),
     )
     
-    application_status  = models.CharField(max_length=64,choices=APPLICATION_STATUS_CHOICES,default='NEW')
+    status  = models.CharField(max_length=64,choices=APPLICATION_STATUS_CHOICES,default='NEW')
+    isConfirmedByTenant = models.CharField(max_length=64,default="NO")
+    isConfirmedByOwner = models.CharField(max_length=64,default="NO")
     
-    ejari_no = models.CharField(max_length=128)
-    premise_no = models.CharField(max_length=128)
-    internal_id = models.CharField(max_length=128)
-    tenant_id  = models.CharField(max_length=512)
-    owner_id  = models.CharField(max_length=512)
+    ejariNo = models.CharField(max_length=128)
+    premisNo = models.CharField(max_length=128)
+    internalID = models.CharField(max_length=128)
+    tenantID  = models.CharField(max_length=512)
+    ownerID  = models.CharField(max_length=512)
     
-    application_address  = models.CharField(max_length=256)
+    address  = models.CharField(max_length=256)
     
-    application_start_date  = models.DateTimeField(blank=True)
-    application_end_date  = models.DateTimeField(blank=True)
+    statDate  = models.DateTimeField(blank=True)
+    endDate  = models.DateTimeField(blank=True)
     
-    application_deposit_amount  = models.CharField(max_length=128,  blank=True)
-    application_deposit_payment_terms  = models.CharField(max_length=64,  blank=True)
-    application_deposit_holding  = models.CharField(max_length=64, blank=True)
-    application_created_date  = models.DateTimeField(auto_now_add=True)
+    depositAmount  = models.CharField(max_length=128,  blank=True)
+    depositHolding  = models.CharField(max_length=64, blank=True)
+    createdAt  = models.DateTimeField(auto_now_add=True)
     
-    application_tenant_dispute_claim = models.CharField(max_length=2048, blank=True)
-    application_owner_dispute_claim = models.CharField(max_length=2048, blank=True)
+    tenantDisputeClaim = models.CharField(max_length=2048, blank=True)
+    ownerDisputeClaim = models.CharField(max_length=2048, blank=True)
     
     def __str__(self):
-        return '%s %s %s %s %s %s %s' % (self.application_id, self.internal_id, self.application_registered_by, self.application_other_party, self.application_deposit_amount, self.application_deposit_payment_terms, self.application_created_date)
+        return 1
     
     
 """
@@ -108,16 +106,15 @@ class Event(models.Model):
         ('IGNORED', 'IGNORED'),
     )
     
-    event_status  = models.CharField(max_length=512,choices=EVENT_STATUS_CHOICES,default='NEW')
+    status  = models.CharField(max_length=512,choices=EVENT_STATUS_CHOICES,default='NEW')
     
-    event_id = models.CharField(max_length=128)
-    event_type = models.CharField(max_length=64)
-    user_id  = models.CharField(max_length=512)
-    event_occured_at  = models.DateTimeField(auto_now_add=True)
+    referenceid = models.CharField(max_length=128, blank=True)
+    what = models.CharField(max_length=64)
+    who  = models.CharField(max_length=512)
+    when  = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return '%s %s %s %s %s %s %s' % (self.event_id, self.event_type, self.user_id, self.event_status, self.event_occured_at)
-    
+        return 1
     
  
     
