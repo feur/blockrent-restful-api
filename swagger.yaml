@@ -6,33 +6,16 @@ info:
 
 paths:
 
-  '/registrations/{registrationId}':
-    get:
-      summary: Get registration info
-      tags:
-        - registration
-      parameters:
-        - $ref: '#/components/parameters/registrationId'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Registration'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-  '/registrations':
+  '/applications':
     post:
-      summary: Submit registration form
+      summary: Submit application form
       tags:
         - registration
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Registration'
+              $ref: '#/components/schemas/NewApplication'
         required: true
       responses:
         '201':
@@ -40,22 +23,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegistrationResponse'
+                $ref: '#/components/schemas/Application'
         '400':
           $ref: '#/components/responses/BadRequest'
 
-  '/registrations/{registrationId}/signup':
-    post:
-      summary: Submit sign up form
+  '/users/{userId}':
+    patch:
+      summary: Update users
       tags:
-        - sign up
+        - users
       parameters:
-        - $ref: '#/components/parameters/registrationId'
+        - $ref: '#/components/parameters/userId'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Application'
+              $ref: '#/components/schemas/NewBankAccount'
         required: true
       responses:
         '201':
@@ -63,7 +46,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationResponse'
+                $ref: '#/components/schemas/User'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -71,65 +54,71 @@ paths:
 
 components:
   parameters:
-    registrationId:
+    applicationId:
       in: path
-      name: registrationId
+      name: applicationId
       required: true
       schema:
         type: string
 
+    userId:
+      in: path
+      name: userId
+      required: true
+      schema:
+        type: string
+        format: uuid
+
   schemas:
 
-    Registration:
+    NewApplication:
       type: object
       properties:
-        id:
+        tenantFirstName:
           type: string
-          format: uuid
-        type:
-          $ref: '#/components/schemas/RegistrationType'
-        personalDetails:
-          $ref: '#/components/schemas/PersonalDetails'
-        leaseApplicationDetails:
-          $ref: '#/components/schemas/LeaseApplicationDetails'
-        createdAt:
+        tenantLastName:
           type: string
-          format: date
-      required:
-        - id
-        - type
-        - personalDetails
-        - leaseApplicationDetails
-        - createdAt
-
-    RegistrationResponse:
-      type: object
-      properties:
-        id:
+        tenantPhone:
           type: string
-          format: uuid
-        type:
-          $ref: '#/components/schemas/RegistrationType'
-        personalDetails:
-          $ref: '#/components/schemas/PersonalDetails'
-        leaseApplicationDetails:
-          $ref: '#/components/schemas/LeaseApplicationDetails'
-        createdAt:
+        tenantEmail:
+          type: string
+        ejariContractNo:
+          type: string
+        propertyAddress:
+          type: string
+        startDate:
           type: string
           format: date
+        endDate:
+          type: string
+          format: date
+        premiseNo:
+          type: string
+        securityDeposit:
+          type: number
+        managerFirstName:
+          type: string
+        managerLastName:
+          type: string
+        managerPhone:
+          type: string
+        managerEmail:
+          type: string
       required:
-        - id
-        - type
-        - personalDetails
-        - leaseApplicationDetails
-        - createdAt
-
-    RegistrationType:
-      type: string
-      enum:
-        - TENANT
-        - LANDLORD
-        - PROPERTY_AGENT
+        - tenantFirstName
+        - tenantLastName
+        - tenantPhone
+        - tenantEmail
+        - ejariContractNo
+        - propertyAddress
+        - startDate
+        - endDate
+        - premiseNo
+        - securityDeposit
+        - managerFirstName
+        - managerLastName
+        - managerPhone
+        - managerEmail
 
     Application:
       type: object
@@ -137,6 +126,36 @@ components:
         id:
           type: string
           format: uuid
+        tenantFirstName:
+          type: string
+        tenantLastName:
+          type: string
+        tenantPhone:
+          type: string
+        tenantEmail:
+          type: string
+        ejariContractNo:
+          type: string
+        propertyAddress:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        premiseNo:
+          type: string
+        securityDeposit:
+          type: number
+        managerFirstName:
+          type: string
+        managerLastName:
+          type: string
+        managerPhone:
+          type: string
+        managerEmail:
+          type: string
         status:
           $ref: '#/components/schemas/ApplicationStatus'
         createdAt:
@@ -146,30 +165,22 @@ components:
           type: string
           format: date
       required:
-        - id
+        - tenantFirstName
+        - tenantLastName
+        - tenantPhone
+        - tenantEmail
+        - ejariContractNo
+        - propertyAddress
+        - startDate
+        - endDate
+        - premiseNo
+        - securityDeposit
+        - managerFirstName
+        - managerLastName
+        - managerPhone
+        - managerEmail
         - status
         - createdAt
-        - updatedAt
-
-    ApplicationResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        status:
-          $ref: '#/components/schemas/ApplicationStatus'
-        createdAt:
-          type: string
-          format: date
-        updatedAt:
-          type: string
-          format: date
-      required:
-        - id
-        - status
-        - createdAt
-        - updatedAt
 
     ApplicationStatus:
       type: string
@@ -178,7 +189,7 @@ components:
         - UNVERIFIED
         - VERIFIED
 
-    PersonalDetails:
+    User:
       type: object
       properties:
         id:
@@ -192,38 +203,60 @@ components:
           type: string
         email:
           type: string
-      required:
-        - id
-        - firstName
-        - lastName
-        - phone
-        - email
+        bankAccount:
+          $ref: '#/components/schemas/BankAccount'
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+        required:
+          - id
+          - firstName
+          - lastName
+          - phone
+          - email
+          - createdAt
 
-    LeaseApplicationDetails:
+    NewBankAccount:
+      type: object
+      properties:
+        bankName:
+          type: string
+        bsb:
+          type: string
+        accountNumber:
+          type: string
+        required:
+          - bankName
+          - bsb
+          - accountNumber
+
+    BankAccount:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        applicationId:
+        bankName:
           type: string
-        address:
+        bsb:
           type: string
-        startDate:
+        accountNumber:
+          type: string
+        createdAt:
           type: string
           format: date
-        endDate:
+        updatedAt:
           type: string
           format: date
-        otherParty:
-          $ref: '#/components/schemas/PersonalDetails'
-      required:
-        - id
-        - applicationId
-        - address
-        - startDate
-        - endDate
-        - otherParty
+        required:
+          - id
+          - bankName
+          - bsb
+          - accountNumber
+          - createdAt
 
     Error:
       type: object
