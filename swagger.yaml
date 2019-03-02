@@ -52,6 +52,83 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  '/properties/{propertyId}/deposits':
+    post:
+      summary: Make a deposit
+      tags:
+        - deposits
+      parameters:
+        - $ref: '#/components/parameters/propertyId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewDeposit'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deposit'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  '/properties/{propertyId}/deposits/{depositId}/withdrawls':
+    post:
+      summary: Withdraw a deposit
+      tags:
+        - deposits
+      parameters:
+        - $ref: '#/components/parameters/propertyId'
+        - $ref: '#/components/parameters/depositId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewWithdrawl'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Withdrawl'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  '/properties/{propertyId}/deposits/{depositId}/refunds':
+    post:
+      summary: Refund a deposit
+      tags:
+        - deposits
+      parameters:
+        - $ref: '#/components/parameters/propertyId'
+        - $ref: '#/components/parameters/depositId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewRefund'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refund'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
   parameters:
     applicationId:
@@ -60,10 +137,27 @@ components:
       required: true
       schema:
         type: string
+        format: uuid
 
     userId:
       in: path
       name: userId
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    propertyId:
+      in: path
+      name: propertyId
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    depositId:
+      in: path
+      name: depositId
       required: true
       schema:
         type: string
@@ -211,13 +305,13 @@ components:
         updatedAt:
           type: string
           format: date
-        required:
-          - id
-          - firstName
-          - lastName
-          - phone
-          - email
-          - createdAt
+      required:
+        - id
+        - firstName
+        - lastName
+        - phone
+        - email
+        - createdAt
 
     NewBankAccount:
       type: object
@@ -228,10 +322,10 @@ components:
           type: string
         accountNumber:
           type: string
-        required:
-          - bankName
-          - bsb
-          - accountNumber
+      required:
+        - bankName
+        - bsb
+        - accountNumber
 
     BankAccount:
       type: object
@@ -251,12 +345,159 @@ components:
         updatedAt:
           type: string
           format: date
-        required:
-          - id
-          - bankName
-          - bsb
-          - accountNumber
-          - createdAt
+      required:
+        - id
+        - bankName
+        - bsb
+        - accountNumber
+        - createdAt
+
+    NewDeposit:
+      type: object
+      properties:
+        userId:
+          type: string
+        amount:
+          type: number
+          format: uuid
+      required:
+        - userId
+        - amount
+
+    Deposit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        propertyId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        status:
+          $ref: '#/components/schemas/DepositStatus'
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+      required:
+        - id
+        - userId
+        - propertyId
+        - amount
+        - status
+        - createdAt
+
+    NewWithdrawl:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        reason:
+          type: string
+      required:
+        - userId
+
+    Withdrawl:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        propertyId:
+          type: string
+          format: uuid
+        depositId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        reason:
+          type: string
+        status:
+          $ref: '#/components/schemas/DepositStatus'
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+      required:
+        - id
+        - userId
+        - propertyId
+        - depositId
+        - amount
+        - reason
+        - status
+        - createdAt
+
+    NewRefund:
+      type: object
+      properties:
+        userId:
+          type: string
+        amount:
+          type: number
+        reason:
+          type: string
+      required:
+        - userId
+        - amount
+        - reason
+
+    Refund:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        propertyId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        reason:
+          type: string
+        status:
+          $ref: '#/components/schemas/DepositStatus'
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+      required:
+        - id
+        - userId
+        - propertyId
+        - amount
+        - reason
+        - status
+        - createdAt
+
+    DepositStatus:
+      type: string
+      enum:
+        - PENDING
+        - SUCCESSFUL
+        - FAILED
+        - WITHDRAWN
+        - PARTIALLY_REFUNDED
+        - REFUNDED
 
     Error:
       type: object
